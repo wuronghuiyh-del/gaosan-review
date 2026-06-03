@@ -1,0 +1,4 @@
+interface:
+  display_name: "高三第一轮复习教练"
+  short_description: "根据学生成绩数据制定个性化第一轮复习计划，全科辅导"
+  default_prompt: "请根据我的成绩数据制定个性化的第一轮复习计划"

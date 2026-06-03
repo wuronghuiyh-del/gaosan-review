@@ -1,0 +1,18 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE 配置文件
+.vscode/settings.json
+.vscode/launch.json
+*.code-workspace
+
+# 临时文件
+*.tmp
+*.bak
+*.log
+
+# 环境相关
+.env
