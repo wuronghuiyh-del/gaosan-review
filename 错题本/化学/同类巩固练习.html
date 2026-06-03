@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>化学同类巩固练习</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    line-height: 1.8;
+    padding: 20px;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 30px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .header h1 { font-size: 28px; margin-bottom: 8px; }
+  .header p { opacity: 0.9; font-size: 15px; }
+
+  /* Progress bar */
+  .progress-bar {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .progress-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #666;
+  }
+  .progress-item .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .dot.not-done { background: #e0e0e0; border: 2px solid #ccc; }
+  .dot.done { background: #4caf50; }
+  .dot.wrong { background: #f44336; }
+
+  /* Questions */
+  .question-card {
+    background: white;
+    border-radius: 12px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid #667eea;
+    transition: box-shadow 0.2s;
+  }
+  .question-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .question-card.q1 { border-left-color: #667eea; }
+  .question-card.q2 { border-left-color: #e91e63; }
+  .question-card.q3 { border-left-color: #ff9800; }
+  .question-card.q4 { border-left-color: #4caf50; }
+
+  .q-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .q-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .q1 .q-badge { background: #667eea; }
+  .q2 .q-badge { background: #e91e63; }
+  .q3 .q-badge { background: #ff9800; }
+  .q4 .q-badge { background: #4caf50; }
+  .q-title { font-size: 18px; font-weight: 600; }
+  .q-tag {
+    font-size: 12px;
+    color: #999;
+    margin-left: auto;
+    background: #f5f5f5;
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+
+  .q-body { font-size: 15px; }
+  .q-body p { margin-bottom: 10px; }
+  .q-body strong { color: #333; }
+  .q-body .highlight {
+    background: #fff3e0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .q-body .highlight-blue {
+    background: #e3f2fd;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .q-body .highlight-red {
+    background: #ffebee;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    color: #c62828;
+  }
+
+  .q-body ol, .q-body ul { padding-left: 24px; margin-bottom: 10px; }
+  .q-body li { margin-bottom: 6px; }
+  .q-body .formula {
+    font-family: "Courier New", monospace;
+    background: #f8f9fa;
+    padding: 8px 14px;
+    border-radius: 8px;
+    display: inline-block;
+    margin: 4px 0;
+    font-size: 15px;
+  }
+  .q-body .sub { font-size: 0.75em; vertical-align: sub; }
+  .q-body .sup { font-size: 0.75em; vertical-align: super; }
+
+  /* Energy diagram */
+  .energy-diagram {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 12px 0;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.3;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* Answer button */
+  .answer-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: opacity 0.2s;
+    width: 100%;
+    text-align: center;
+  }
+  .answer-btn:hover { opacity: 0.9; }
+  .answer-btn:active { transform: scale(0.98); }
+
+  .answer-content {
+    display: none;
+    margin-top: 16px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #4caf50;
+    font-size: 14.5px;
+    line-height: 1.9;
+  }
+  .answer-content.show { display: block; }
+  .answer-content .key {
+    display: inline-block;
+    background: #fff8e1;
+    border-left: 3px solid #ffc107;
+    padding: 8px 14px;
+    margin: 6px 0;
+    border-radius: 0 6px 6px 0;
+    width: 100%;
+  }
+  .answer-content .wrong-note {
+    background: #ffebee;
+    border-left: 3px solid #f44336;
+    padding: 8px 14px;
+    margin: 6px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .answer-content .correct-note {
+    background: #e8f5e9;
+    border-left: 3px solid #4caf50;
+    padding: 8px 14px;
+    margin: 6px 0;
+    border-radius: 0 6px 6px 0;
+  }
+
+  h3 { font-size: 16px; margin: 16px 0 8px 0; color: #333; }
+  h3:first-child { margin-top: 0; }
+  hr { border: none; border-top: 1px solid #eee; margin: 16px 0; }
+
+  /* Table */
+  .check-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  .check-table th {
+    background: #667eea;
+    color: white;
+    padding: 10px 12px;
+    text-align: left;
+  }
+  .check-table th:first-child { border-radius: 8px 0 0 0; }
+  .check-table th:last-child { border-radius: 0 8px 0 0; }
+  .check-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+  }
+  .check-table tr:hover td { background: #f8f9fa; }
+  .check-box {
+    width: 24px; height: 24px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    line-height: 22px;
+    font-size: 14px;
+    user-select: none;
+    transition: all 0.2s;
+  }
+  .check-box.checked {
+    background: #4caf50;
+    border-color: #4caf50;
+    color: white;
+  }
+
+  .footer-note {
+    background: #e3f2fd;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 15px;
+    color: #1565c0;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 12px; }
+    .header { padding: 24px 16px; }
+    .header h1 { font-size: 22px; }
+    .question-card { padding: 20px 16px; }
+    .progress-bar { flex-direction: column; }
+    .progress-item { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🧪 化学同类巩固练习</h1>
+    <p>针对错题本第1~4题 · 做完后找我批改！</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar">
+    <span class="progress-item"><span class="dot not-done"></span> 未做</span>
+    <span class="progress-item"><span class="dot done"></span> 已做对</span>
+    <span class="progress-item"><span class="dot wrong"></span> 做错了</span>
+    <span class="progress-item" style="color:#333;font-weight:600;">🎯 目标：全部拿下！</span>
+  </div>
+
+  <!-- Q1 -->
+  <div class="question-card q1">
+    <div class="q-header">
+      <span class="q-badge">1</span>
+      <span class="q-title">乙醇燃料电池（酸性）</span>
+      <span class="q-tag">对应错题 #1</span>
+    </div>
+    <div class="q-body">
+      <p><strong>对应错题：</strong>CO气体传感器 — 介质条件判断</p>
+      <p><strong>题目：</strong>一种乙醇（C<sub>2</sub>H<sub>5</sub>OH）燃料电池，以 <strong class="highlight-red">H₂SO₄ 溶液</strong> 为电解质，正极通入 O₂。</p>
+      <ol>
+        <li>写出该电池的 <strong>负极反应式</strong>（C₂H₅OH 被氧化为 CO₂）</li>
+        <li>写出该电池的 <strong>正极反应式</strong></li>
+        <li>若电路中转移了 <strong>1.2 mol</strong> 电子，消耗的 O₂ 在标准状况下的体积是多少？</li>
+      </ol>
+    </div>
+    <button class="answer-btn" onclick="toggleAnswer(this)">📖 查看答案</button>
+    <div class="answer-content">
+      <p><strong>(1) 负极：</strong></p>
+      <div class="formula">C₂H₅OH + 3H₂O − 12e⁻ → 2CO₂ + 12H⁺</div>
+      <div class="key">🔑 C₂H₅OH 中 C 平均价态 −2 → CO₂ 中 +4，每个C升6价，2个C共升12价，失12e⁻。酸性条件用 H⁺ 和 H₂O 配平。</div>
+      
+      <p><strong>(2) 正极：</strong></p>
+      <div class="formula">3O₂ + 12H⁺ + 12e⁻ → 6H₂O</div>
+      <div class="key">🔑 酸性条件：O₂ + 4H⁺ + 4e⁻ → 2H₂O，乘以3配平电子数</div>
+      
+      <p><strong>(3) 电子转移计算：</strong></p>
+      <div class="correct-note">由正极反应：O₂ ~ 4e⁻，n(O₂) = 1.2 ÷ 4 = 0.3 mol<br>V(O₂) = 0.3 × 22.4 = <strong>6.72 L</strong> ✅</div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question-card q2">
+    <div class="q-header">
+      <span class="q-badge">2</span>
+      <span class="q-title">锂离子电池（放电+充电）</span>
+      <span class="q-tag">对应错题 #2</span>
+    </div>
+    <div class="q-body">
+      <p><strong>对应错题：</strong>Ni-H₂充电电池 — 充放电判断</p>
+      <p><strong>题目：</strong>一种锂离子电池的总反应为：</p>
+      <div class="formula">LiCoO₂ + 6C ⇌ Li₁₋ₓCoO₂ + LiₓC₆</div>
+      <p><strong>（放电时从左→右，充电时从右→左）</strong></p>
+      <ol>
+        <li>放电时，哪一极是负极？写出负极反应式。</li>
+        <li>充电时，Li⁺ 向哪一极移动？</li>
+        <li>该电池的离子交换膜应该是哪种类型？</li>
+      </ol>
+    </div>
+    <button class="answer-btn" onclick="toggleAnswer(this)">📖 查看答案</button>
+    <div class="answer-content">
+      <p><strong>(1) 放电时负极：</strong></p>
+      <div class="wrong-note">❌ 6C + xLi⁺ + xe⁻ → LiₓC₆ <strong>—— 这是正极反应！</strong></div>
+      <div class="key">注意：放电时 <strong>负极失电子</strong>，LiₓC₆ 中的 Li 应该失去电子变成 Li⁺</div>
+      <div class="correct-note">
+        ✅ <strong>负极：</strong>LiₓC₆ − xe⁻ → 6C + xLi⁺<br>
+        ✅ <strong>正极：</strong>Li₁₋ₓCoO₂ + xLi⁺ + xe⁻ → LiCoO₂
+      </div>
+      
+      <p><strong>(2) 充电时：</strong></p>
+      <div class="correct-note">充电是放电的逆过程，Li⁺ 从正极材料中脱出，<strong>向负极移动</strong>（回到石墨中）✅</div>
+      
+      <p><strong>(3) 交换膜类型：</strong></p>
+      <div class="correct-note">Li⁺ 是阳离子，所以是 <strong>阳离子交换膜</strong> ✅（允许 Li⁺ 通过）</div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question-card q3">
+    <div class="q-header">
+      <span class="q-badge">3</span>
+      <span class="q-title">电解水催化机理 + 燃料电池匹配</span>
+      <span class="q-tag">对应错题 #3</span>
+    </div>
+    <div class="q-body">
+      <p><strong>对应错题：</strong>PEM燃料电池+催化机理 — 图-电极匹配</p>
+      <p><strong>题目：</strong>研究某电解水催化剂（析氧反应 OER）的催化机理，得到下图所示的能量变化：</p>
+      <div class="energy-diagram">能量
+↑     ╱╲         TS₂
+│    ╱  ╲       ╱╲        ╱╲ 产物
+│   ╱    ╲     ╱  ╲      ╱  ╲
+│  ╱      ╲   ╱    ╲    ╱    ╲
+│ ╱        ╲ ╱      ╲══╱      ╲
+│╱          ╲╱        ╲        ╲
+│      TS₁  中间体₁   中间体₂
+│ 反应物
+└──────────────────────────────→ 反应进程</div>
+      <p>图中显示 OER 反应：<strong>2H₂O → O₂ + 4H⁺ + 4e⁻</strong> 的过程中，有两个过渡态 TS₁ 和 TS₂。</p>
+      <ol>
+        <li>该反应的决速步是哪一步？</li>
+        <li>如果将该催化剂用于 <strong>氢氧燃料电池的正极</strong>，是否可以？为什么？</li>
+        <li>该催化剂若用于 <strong>PEM燃料电池</strong>，电极反应是什么？</li>
+      </ol>
+    </div>
+    <button class="answer-btn" onclick="toggleAnswer(this)">📖 查看答案</button>
+    <div class="answer-content">
+      <p><strong>(1) 决速步：</strong></p>
+      <div class="correct-note"><strong>TS₂ 对应的步骤</strong>（能垒更高，是快速步）✅</div>
+      
+      <p><strong>(2) 可以用于正极！</strong></p>
+      <div class="key">因为 OER（析氧反应）2H₂O → O₂ + 4H⁺ + 4e⁻ 是 <strong>电解水</strong> 的反应<br>
+      它的逆反应 O₂ + 4H⁺ + 4e⁻ → 2H₂O 正是 <strong>燃料电池正极反应</strong><br>
+      好的 OER 催化剂通常也是好的 ORR（氧还原）催化剂 ✅</div>
+      
+      <p><strong>(3) PEM燃料电池正极反应：</strong></p>
+      <div class="formula">O₂ + 4H⁺ + 4e⁻ → 2H₂O ✅</div>
+      <div class="key">（PEM 是酸性环境，与本题酸性条件一致）</div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question-card q4">
+    <div class="q-header">
+      <span class="q-badge">4</span>
+      <span class="q-title">CH₃OH 催化重整 + 直接甲醇燃料电池</span>
+      <span class="q-tag">对应错题 #4</span>
+    </div>
+    <div class="q-body">
+      <p><strong>对应错题：</strong>CO₂-CH₄催化重整 + 甲烷燃料电池 — 综合多图</p>
+      
+      <h3>第一部分：催化重整</h3>
+      <p><strong>题目：</strong>CH₃OH(g) + H₂O(g) → CO₂(g) + 3H₂(g) &nbsp; <strong>ΔH = +49 kJ/mol</strong></p>
+      <ol>
+        <li>该反应是吸热还是放热？升温对平衡有何影响？</li>
+        <li>使用催化剂后，ΔH 会改变吗？为什么？</li>
+      </ol>
+
+      <h3>第二部分：直接甲醇燃料电池（KOH电解质）</h3>
+      <p>以 CH₃OH 为燃料，<strong class="highlight-red">KOH 为电解质</strong> 的燃料电池。</p>
+      <ol start="3">
+        <li>写出负极反应式（CH₃OH → CO₃²⁻）</li>
+        <li>写出正极反应式</li>
+        <li><strong class="highlight-red">陷阱题：</strong>若测得 5.6 L CH₃OH（气体，已汽化）完全反应，电路中转移了 0.75N<sub>A</sub> 个电子。判断此说法是否正确并说明理由。</li>
+      </ol>
+    </div>
+    <button class="answer-btn" onclick="toggleAnswer(this)">📖 查看答案</button>
+    <div class="answer-content">
+      <h3>第一部分</h3>
+      <p><strong>(1)</strong> ΔH > 0，<strong>吸热反应</strong>。升温使平衡 <strong>正向移动</strong>（有利于产氢）。</p>
+      <p><strong>(2)</strong> 催化剂 <strong>不改变 ΔH</strong>！只改变活化能。</p>
+      
+      <h3>第二部分</h3>
+      <p><strong>(3) 负极：</strong></p>
+      <div class="formula">CH₃OH + 8OH⁻ − 6e⁻ → CO₃²⁻ + 6H₂O</div>
+      <div class="key">🔑 CH₃OH 中 C：−2价 → CO₃²⁻ 中 C：+4价，变化6e⁻<br>碱性条件，产物为 <strong>CO₃²⁻</strong>（不是CO₂！）</div>
+      
+      <p><strong>(4) 正极：</strong></p>
+      <div class="formula">O₂ + 4e⁻ + 2H₂O → 4OH⁻</div>
+      <div class="key">乘以 1.5 配平：<strong>1.5O₂ + 6e⁻ + 3H₂O → 6OH⁻</strong></div>
+      
+      <p><strong>(5) 陷阱题分析：</strong></p>
+      <div class="wrong-note">❌ 说法错误！</div>
+      <div class="key">
+        CH₃OH ∼ 6e⁻（每个CH₃OH分子转移6个电子）<br>
+        5.6 L ÷ 22.4 L/mol = 0.25 mol（在<strong>标准状况</strong>下）<br>
+        n(e⁻) = 0.25 × 6 = <strong>1.5 mol</strong> ≠ 0.75 mol ❌
+      </div>
+      <div class="correct-note">
+        <strong>错误原因：</strong>即使标准状况下，转移电子数应为 1.5N<sub>A</sub>，不是 0.75N<sub>A</sub>。<br>
+        如果还没说明是标准状况，更是错上加错！<br>
+        🎯 牢记：<strong>没标"标准状况"就不能用 22.4 L/mol！</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checklist -->
+  <div class="question-card" style="border-left-color: #333;">
+    <div class="q-header">
+      <span class="q-badge" style="background:#333;">✓</span>
+      <span class="q-title">答题对照表</span>
+    </div>
+    <table class="check-table">
+      <tr>
+        <th>题号</th>
+        <th>对应错题</th>
+        <th>核心考点</th>
+        <th style="text-align:center;">做完打✓</th>
+      </tr>
+      <tr>
+        <td><strong>第1题</strong></td>
+        <td>CO传感器</td>
+        <td>酸性介质写电极反应 + 电子转移计算</td>
+        <td style="text-align:center;"><span class="check-box" onclick="this.classList.toggle('checked'); this.textContent=this.classList.contains('checked')?'✓':''"></span></td>
+      </tr>
+      <tr>
+        <td><strong>第2题</strong></td>
+        <td>Ni-H₂电池</td>
+        <td>充放电判断 + 离子移动方向</td>
+        <td style="text-align:center;"><span class="check-box" onclick="this.classList.toggle('checked'); this.textContent=this.classList.contains('checked')?'✓':''"></span></td>
+      </tr>
+      <tr>
+        <td><strong>第3题</strong></td>
+        <td>PEM+催化</td>
+        <td>图-电极匹配 + 决速步判断</td>
+        <td style="text-align:center;"><span class="check-box" onclick="this.classList.toggle('checked'); this.textContent=this.classList.contains('checked')?'✓':''"></span></td>
+      </tr>
+      <tr>
+        <td><strong>第4题</strong></td>
+        <td>CH₄催化+电池</td>
+        <td>催化综合 + 气体陷阱 + 电子转移</td>
+        <td style="text-align:center;"><span class="check-box" onclick="this.classList.toggle('checked'); this.textContent=this.classList.contains('checked')?'✓':''"></span></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-note">
+    ✍️ <strong>做完后叫我批改！</strong> 我会帮你逐题分析对错，再针对薄弱点继续巩固 💪
+  </div>
+
+</div>
+
+<script>
+function toggleAnswer(btn) {
+  var content = btn.nextElementSibling;
+  content.classList.toggle('show');
+  btn.textContent = content.classList.contains('show') ? '🙈 收起答案' : '📖 查看答案';
+}
+</script>
+</body>
+</html>
