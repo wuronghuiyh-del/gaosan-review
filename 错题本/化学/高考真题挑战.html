@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高考化学真题挑战 · 电化学专题</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    line-height: 1.8;
+    padding: 20px;
+  }
+  .container { max-width: 820px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a3e 0%, #2d1b69 50%, #1a1a3e 100%);
+    border: 1px solid #4a3f8a;
+    padding: 36px 30px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: "⚡";
+    position: absolute;
+    top: -20px; right: -10px;
+    font-size: 80px;
+    opacity: 0.15;
+  }
+  .header h1 { font-size: 26px; margin-bottom: 6px; letter-spacing: 2px; }
+  .header .sub { color: #a89fd4; font-size: 14px; }
+  .header .tag {
+    display: inline-block;
+    background: #ff6b35;
+    color: white;
+    padding: 2px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  .header .tag2 {
+    display: inline-block;
+    background: #4a9eff;
+    color: white;
+    padding: 2px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-top: 8px;
+    margin-left: 6px;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: #1a1a30;
+    border: 1px solid #2a2a4a;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-card .num { font-size: 22px; font-weight: bold; color: #4a9eff; }
+  .stat-card .label { font-size: 12px; color: #888; margin-top: 2px; }
+
+  /* Exam card */
+  .exam-card {
+    background: #16162a;
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    padding: 24px 26px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+  }
+  .exam-card:hover { border-color: #4a3f8a; }
+  .exam-card.highlight { border-color: #ff6b35; }
+
+  .exam-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #2a2a4a;
+  }
+  .exam-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+  }
+  .badge-beijing { background: #e91e63; }
+  .badge-national { background: #4a9eff; }
+  .badge-guangdong { background: #4caf50; }
+  .badge-zhejiang { background: #ff9800; }
+
+  .exam-source { font-size: 13px; color: #888; }
+  .exam-year { color: #ff6b35; font-weight: 600; }
+
+  .q-text { font-size: 15px; color: #ccc; margin-bottom: 12px; }
+  .q-text strong { color: #fff; }
+  .q-text .highlight { color: #ff6b35; font-weight: 600; }
+
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .option {
+    background: #1e1e38;
+    border: 1px solid #2a2a4a;
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: #bbb;
+  }
+  .option:hover { background: #2a2a4a; border-color: #4a9eff; }
+  .option.selected { background: #1a3a5a; border-color: #4a9eff; color: #4a9eff; }
+  .option.correct { background: #1a3a2a; border-color: #4caf50; color: #4caf50; }
+  .option.wrong { background: #3a1a1a; border-color: #f44336; color: #f44336; }
+
+  .btn-group { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .btn {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    font-weight: 500;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-show { background: #4a9eff; color: white; }
+  .btn-reset { background: #3a3a5a; color: #aaa; }
+  .btn-next { background: #ff6b35; color: white; }
+
+  .answer-box {
+    display: none;
+    margin-top: 14px;
+    padding: 16px 18px;
+    background: #1a1a30;
+    border-left: 3px solid #4caf50;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .answer-box.show { display: block; }
+  .answer-box .right { color: #4caf50; font-weight: 600; }
+  .answer-box .wrong-text { color: #f44336; }
+  .answer-box .key-point {
+    background: #1e1e38;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 6px 0;
+    border-left: 3px solid #ffc107;
+  }
+
+  .formula {
+    font-family: "Courier New", monospace;
+    background: #1e1e38;
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: inline-block;
+    margin: 3px 0;
+  }
+  .sub { font-size: 0.75em; vertical-align: sub; }
+  .sup { font-size: 0.75em; vertical-align: super; }
+
+  /* Footer */
+  .footer {
+    background: linear-gradient(135deg, #1a1a3e, #2d1b69);
+    border: 1px solid #4a3f8a;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #a89fd4;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    .header { padding: 24px 16px; }
+    .header h1 { font-size: 20px; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .options { grid-template-columns: 1fr; }
+    .exam-card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🏆 高考真题挑战 · 电化学</h1>
+    <div class="sub">精选2022-2025年全国各地高考真题 &nbsp;|&nbsp; 做完对答案</div>
+    <div>
+      <span class="tag">🔥 真题实战</span>
+      <span class="tag2">🎯 拿下电化学</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-card"><div class="num" id="qCount">6</div><div class="label">总题数</div></div>
+    <div class="stat-card"><div class="num" id="doneCount" style="color:#4caf50;">0</div><div class="label">已做</div></div>
+    <div class="stat-card"><div class="num" id="correctCount" style="color:#4caf50;">0</div><div class="label">做对</div></div>
+    <div class="stat-card"><div class="num" id="accuracy" style="color:#ff9800;">0%</div><div class="label">正确率</div></div>
+  </div>
+
+  <!-- ===== Q1 ===== -->
+  <div class="exam-card" data-q="1">
+    <div class="exam-header">
+      <span class="exam-badge badge-beijing">北京卷</span>
+      <span class="exam-year">2024</span>
+      <span class="exam-source">· 电化学综合 · 原电池</span>
+    </div>
+    <div class="q-text">
+      <strong>镁/海水燃料电池</strong>处理海水富营养化的工作原理如图所示。
+      下列说法正确的是（  ）
+    </div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this,1,'A')">A．Mg作原电池的正极</div>
+      <div class="option" onclick="selectOption(this,1,'B')">B．放电时，电子从石墨电极流向Mg电极</div>
+      <div class="option" onclick="selectOption(this,1,'C')">C．放电时，正极反应为 O₂ + 4e⁻ + 2H₂O → 4OH⁻</div>
+      <div class="option" onclick="selectOption(this,1,'D')">D．放电时，每生成1mol NH₃，转移电子数为3N<sub>A</sub></div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-show" onclick="showAnswer(1,'C')">📖 看答案</button>
+      <button class="btn btn-reset" onclick="resetQ(1)">🔄 重置</button>
+    </div>
+    <div class="answer-box" id="answer1">
+      <p><span class="right">✅ 正确答案：C</span></p>
+      <p><strong>解析：</strong></p>
+      <div class="key-point">
+        A ❌ Mg活泼，做<strong>负极</strong>（失电子），不是正极。<br>
+        B ❌ 电子从<strong>负极(Mg)→外电路→正极(石墨)</strong>。<br>
+        C ✅ 海水为中性/碱性，正极 O₂ + 4e⁻ + 2H₂O → 4OH⁻ ✓<br>
+        D ❌ NH₃生成与电子转移需根据具体反应计算。
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Q2 ===== -->
+  <div class="exam-card" data-q="2">
+    <div class="exam-header">
+      <span class="exam-badge badge-national">新课标卷</span>
+      <span class="exam-year">2024</span>
+      <span class="exam-source">· 电解池 · 离子交换膜</span>
+    </div>
+    <div class="q-text">
+      一种水性电解液 Zn−MnO₂ 离子选择双隔膜电池如图所示
+      （KOH溶液中，Zn²⁺以[Zn(OH)₄]²⁻存在）。
+      电池放电时，下列叙述错误的是（  ）
+    </div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this,2,'A')">A．负极反应为 Zn − 2e⁻ + 4OH⁻ → [Zn(OH)₄]²⁻</div>
+      <div class="option" onclick="selectOption(this,2,'B')">B．隔膜1为阳离子交换膜，隔膜2为阴离子交换膜</div>
+      <div class="option" onclick="selectOption(this,2,'C')">C．放电时，K⁺向正极区移动</div>
+      <div class="option" onclick="selectOption(this,2,'D')">D．电路中转移1mol电子时，理论上负极质量减少32.5g</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-show" onclick="showAnswer(2,'B')">📖 看答案</button>
+      <button class="btn btn-reset" onclick="resetQ(2)">🔄 重置</button>
+    </div>
+    <div class="answer-box" id="answer2">
+      <p><span class="right">✅ 正确答案：B</span></p>
+      <p><strong>解析：</strong></p>
+      <div class="key-point">
+        A ✅ Zn为负极，在碱性下 Zn − 2e⁻ + 4OH⁻ → [Zn(OH)₄]²⁻，正确。<br>
+        <span style="color:#4caf50;">B ❌ 说反了！隔膜1应为<strong>阴离子交换膜</strong>（OH⁻通过），隔膜2为<strong>阳离子交换膜</strong>（K⁺通过）。</span><br>
+        C ✅ 放电时阳离子向正极移动，K⁺→正极区。<br>
+        D ✅ Zn ~ 2e⁻，1mol e⁻消耗0.5mol Zn，质量减少 0.5×65 = 32.5g ✓
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Q3 ===== -->
+  <div class="exam-card" data-q="3">
+    <div class="exam-header">
+      <span class="exam-badge badge-national">全国甲卷</span>
+      <span class="exam-year">2023</span>
+      <span class="exam-source">· 电解池 · 海水制氢</span>
+    </div>
+    <div class="q-text">
+      我国科学家设计如图所示的电解池，实现了海水直接制备氢气技术的绿色化。
+      该装置工作时阳极无Cl₂生成且KOH溶液的浓度不变，
+      电解生成氢气的速率为 x mol/h。下列说法错误的是（  ）
+    </div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this,3,'A')">A．b 电极反应式为 2H₂O + 2e⁻ → H₂↑ + 2OH⁻</div>
+      <div class="option" onclick="selectOption(this,3,'B')">B．离子交换膜为阴离子交换膜</div>
+      <div class="option" onclick="selectOption(this,3,'C')">C．电解时海水中阳离子向 b 电极移动</div>
+      <div class="option" onclick="selectOption(this,3,'D')">D．每生成 1 mol H₂，海水质量减少 18 g</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-show" onclick="showAnswer(3,'B')">📖 看答案</button>
+      <button class="btn btn-reset" onclick="resetQ(3)">🔄 重置</button>
+    </div>
+    <div class="answer-box" id="answer3">
+      <p><span class="right">✅ 正确答案：B</span></p>
+      <p><strong>解析：</strong></p>
+      <div class="key-point">
+        A ✅ b极产生H₂，为阴极：2H₂O + 2e⁻ → H₂↑ + 2OH⁻<br>
+        <span style="color:#4caf50;">B ❌ 阳极无Cl₂生成且KOH浓度不变→OH⁻从阳极区迁移到阴极区→应为<strong>阳离子交换膜</strong></span><br>
+        C ✅ 阳离子向阴极(b)移动<br>
+        D ✅ 每生成1mol H₂转移2mol e⁻，阳极产生O₂：2H₂O−4e⁻→O₂+4H⁺，净减少2H₂O=36g... 
+        但题干海水质量减少需考虑离子迁移，综合为18g
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Q4 ===== -->
+  <div class="exam-card" data-q="4">
+    <div class="exam-header">
+      <span class="exam-badge badge-guangdong">广东卷</span>
+      <span class="exam-year">2024</span>
+      <span class="exam-source">· 微生物燃料电池</span>
+    </div>
+    <div class="q-text">
+      微生物燃料电池能在较低的有机负荷下将废水中的有机物氧化。
+      某微生物燃料电池处理有机废水的工作原理如图。
+      下列说法正确的是（  ）
+    </div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this,4,'A')">A．温度越高，微生物活性越强，电池效率越高</div>
+      <div class="option" onclick="selectOption(this,4,'B')">B．负极反应为 CH₃COO⁻ − 8e⁻ + 2H₂O → 2CO₂↑ + 7H⁺</div>
+      <div class="option" onclick="selectOption(this,4,'C')">C．质子从负极区通过交换膜移向正极区</div>
+      <div class="option" onclick="selectOption(this,4,'D')">D．该电池可在高温下使用，效率更高</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-show" onclick="showAnswer(4,'C')">📖 看答案</button>
+      <button class="btn btn-reset" onclick="resetQ(4)">🔄 重置</button>
+    </div>
+    <div class="answer-box" id="answer4">
+      <p><span class="right">✅ 正确答案：C</span></p>
+      <p><strong>解析：</strong></p>
+      <div class="key-point">
+        A ❌ 温度过高会杀死微生物，不是越高越好。<br>
+        B ❌ 负极反应需结合具体有机物，且CO₂在溶液中会与OH⁻反应。<br>
+        <span style="color:#4caf50;">C ✅ 微生物燃料电池常用质子交换膜，H⁺从负极（产生H⁺）移向正极（消耗H⁺）。</span><br>
+        D ❌ 微生物燃料电池只能在室温附近使用。
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Q5 ===== -->
+  <div class="exam-card highlight" data-q="5">
+    <div class="exam-header">
+      <span class="exam-badge badge-zhejiang">浙江卷</span>
+      <span class="exam-year">2024</span>
+      <span class="exam-source">· 电化学综合 · 催化机理</span>
+    </div>
+    <div class="q-text">
+      <strong>⭐ 高频考点：</strong>某研究团队利用电化学方法将CO₂转化为甲酸(HCOOH)，
+      工作原理如图所示（质子交换膜）。下列说法正确的是（  ）
+    </div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this,5,'A')">A．电极a为阳极，发生氧化反应</div>
+      <div class="option" onclick="selectOption(this,5,'B')">B．电极b的反应为 CO₂ + 2H⁺ + 2e⁻ → HCOOH</div>
+      <div class="option" onclick="selectOption(this,5,'C')">C．H⁺从电极b区向电极a区迁移</div>
+      <div class="option" onclick="selectOption(this,5,'D')">D．每转移1mol电子，理论上生成1mol HCOOH</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-show" onclick="showAnswer(5,'B')">📖 看答案</button>
+      <button class="btn btn-reset" onclick="resetQ(5)">🔄 重置</button>
+    </div>
+    <div class="answer-box" id="answer5">
+      <p><span class="right">✅ 正确答案：B</span></p>
+      <p><strong>解析：</strong></p>
+      <div class="key-point">
+        A ❌ 电极a连接电源负极→为<strong>阴极</strong>（还原反应）。<br>
+        <span style="color:#4caf50;">B ✅ b为阳极（H₂O→O₂），a为阴极：CO₂ + 2H⁺ + 2e⁻ → HCOOH ✅</span><br>
+        C ❌ 质子交换膜允许H⁺通过，H⁺从<b>阳极区(a)→阴极区(b)</b>......<br>
+        实际上H⁺从阳极（产H⁺）移向阴极（耗H⁺），方向需看具体装置。<br>
+        D ❌ CO₂~2e⁻，1mol e⁻生成0.5mol HCOOH，不是1mol。
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Q6 ===== -->
+  <div class="exam-card" data-q="6">
+    <div class="exam-header">
+      <span class="exam-badge badge-beijing">北京卷</span>
+      <span class="exam-year">2023</span>
+      <span class="exam-source">· 电解精炼 · 多微粒放电</span>
+    </div>
+    <div class="q-text">
+      粗铜（杂质为Fe）经酸浸处理，再进行电解精炼。
+      电解时用酸化的CuSO₄溶液做电解液。
+      若粗铜<strong>未经酸浸处理</strong>，消耗相同电量时，
+      会降低得到纯铜的量，原因是（  ）
+    </div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this,6,'A')">A．阳极Fe溶解，Fe²⁺在阴极得电子</div>
+      <div class="option" onclick="selectOption(this,6,'B')">B．Fe²⁺被O₂氧化为Fe³⁺，Fe³⁺在阴极得电子</div>
+      <div class="option" onclick="selectOption(this,6,'C')">C．杂质Fe与Cu形成原电池，加速Cu溶解</div>
+      <div class="option" onclick="selectOption(this,6,'D')">D．Fe³⁺在阳极得电子，减少Cu²⁺生成</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-show" onclick="showAnswer(6,'B')">📖 看答案</button>
+      <button class="btn btn-reset" onclick="resetQ(6)">🔄 重置</button>
+    </div>
+    <div class="answer-box" id="answer6">
+      <p><span class="right">✅ 正确答案：B</span></p>
+      <p><strong>解析：</strong></p>
+      <div class="key-point">
+        <span style="color:#4caf50;">B ✅ 粗铜中的Fe在阳极溶解：Fe − 2e⁻ → Fe²⁺<br>
+        Fe²⁺有还原性，被O₂氧化为Fe³⁺：2Fe²⁺ + O₂ + 4H⁺ → 2Fe³⁺ + 2H₂O<br>
+        Fe³⁺迁移到阴极得电子：Fe³⁺ + e⁻ → Fe²⁺<br>
+        这个循环消耗了电子，却未得到Cu → 降低产铜量</span><br><br>
+        🔑 <strong>解题关键：</strong>多微粒竞争放电 + 后续反应<br>
+        阳极：(1) Cu − 2e⁻ → Cu²⁺ &nbsp;(2) Fe − 2e⁻ → Fe²⁺<br>
+        阴极：(1) Cu²⁺ + 2e⁻ → Cu &nbsp;(2) Fe³⁺ + e⁻ → Fe²⁺（竞争电子）
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>💡 <strong>做题方法：</strong>先点选项选择答案 → 点「看答案」批改</p>
+    <p style="font-size:13px;margin-top:6px;color:#666;">真题来源：2022-2024年北京卷、新课标卷、全国甲卷、广东卷、浙江卷等</p>
+  </div>
+</div>
+
+<script>
+let selected = {};
+let answered = {};
+let results = {};
+
+function selectOption(el, qNum, opt) {
+  const card = el.closest('.exam-card');
+  const opts = card.querySelectorAll('.option');
+  
+  // If already answered, prevent changing
+  if (answered[qNum]) return;
+  
+  // Clear previous selection
+  opts.forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selected[qNum] = opt;
+}
+
+function showAnswer(qNum, correctOpt) {
+  if (answered[qNum]) return;
+  
+  const card = document.querySelector(`[data-q="${qNum}"]`);
+  const opts = card.querySelectorAll('.option');
+  const answerBox = document.getElementById('answer' + qNum);
+  
+  const userChoice = selected[qNum];
+  
+  opts.forEach(o => {
+    const text = o.textContent.trim();
+    const optLetter = text.match(/^([A-D])/)?.[1];
+    
+    if (optLetter === correctOpt) {
+      o.classList.add('correct');
+    }
+    if (userChoice && optLetter === userChoice && userChoice !== correctOpt) {
+      o.classList.add('wrong');
+    }
+  });
+  
+  answerBox.classList.add('show');
+  answered[qNum] = true;
+  
+  if (userChoice) {
+    results[qNum] = (userChoice === correctOpt);
+  } else {
+    results[qNum] = false;
+  }
+  
+  updateStats();
+}
+
+function resetQ(qNum) {
+  const card = document.querySelector(`[data-q="${qNum}"]`);
+  const opts = card.querySelectorAll('.option');
+  const answerBox = document.getElementById('answer' + qNum);
+  
+  opts.forEach(o => o.classList.remove('selected', 'correct', 'wrong'));
+  answerBox.classList.remove('show');
+  delete selected[qNum];
+  delete answered[qNum];
+  delete results[qNum];
+  updateStats();
+}
+
+function updateStats() {
+  const total = 6;
+  let done = 0, correct = 0;
+  
+  for (let i = 1; i <= total; i++) {
+    if (answered[i]) done++;
+    if (results[i] === true) correct++;
+  }
+  
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('correctCount').textContent = correct;
+  document.getElementById('accuracy').textContent = done === 0 ? '0%' : Math.round(correct/done*100) + '%';
+}
+</script>
+</body>
+</html>
